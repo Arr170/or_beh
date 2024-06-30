@@ -43,7 +43,6 @@ def rslt_change(id):
 def ext_rslt_post():
     data = request.get_json()
     if(data["secret"] == os.environ["SECRET_POST"]):
-        #print(data)
         new_result=Result(name=data["name"], time = data["time"], track = data["track"], date = data["date"])
         db.session.add(new_result)
         db.session.commit()

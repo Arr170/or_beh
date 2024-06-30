@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- input pro filtrovani tabulky dle jmena -->
+
+{% if current_user.is_authenticated %}
 <div class="modal fade" id="delete-modal" tabindex="-1" aria-labelledby="deleteModal" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog ">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="deleteModal">Vymazat záznam?</h1>
@@ -43,6 +44,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 <div class="row justify-content-center ">
     <div class="col-lg-3 col-12">
@@ -78,12 +80,18 @@
     <table class="table table-hover" id="content-table">
         <script >
 
-//posloucha a ceka na nacteni stranky, pak posle get request na data do tabulky a vygeneruje tabulku
 document.addEventListener('DOMContentLoaded', function () {
+    
     fetchJson_CreateTable()
+        .then(()=>{
+        const url = new URL(window.location.href)
+        params = new URLSearchParams(url.search)
+        if(params.has("forceFocus")){
+            let id = params.get("forceFocus")
+            focusRow(id)
+        }})
 })
 
-//znovu posle request a vygeneruje tabulku pri zadani jmena
 document.getElementById("filter-by-name").addEventListener('input', function () {
     fetchJson_CreateTable()
 })
@@ -92,27 +100,34 @@ document.getElementById("track-select-id").addEventListener('change', function (
     fetchJson_CreateTable()
 })
 
-//ted je to nastaveny tak, ze kazdy datum ma svoje vlastni poradi
 document.getElementById("date-select-id").addEventListener('change', function () {
     fetchJson_CreateTable()
 })
 
-function formatTime(timeInSec) {
+function formatTime(timeInMillSec) {
+    var timeInSec = Math.floor(timeInMillSec/1000)
+    var millis = timeInMillSec%1000
     var hours = Math.floor(timeInSec / 3600)
     var minutes = Math.floor((timeInSec - hours * 3600) / 60) % 60
     var seconds = timeInSec % 60
-    return (hours < 10 ? ('0' + hours) : (hours)) + ':' + (minutes < 10 ? ('0' + minutes) : minutes) + ':' + (seconds < 10 ? ('0' + seconds) : seconds)
+    var formatted = ""
+    if(hours){
+        formatted = formatted + ("00" + hours).slice(-2) + ":"
+    }
+    formatted = formatted + ("00" + minutes).slice(-2) + ":"+("00"+seconds).slice(-2) + "." + ("000"+millis).slice(-3)
+
+
+    return formatted
 }
 
 
-//fetchne data pro tabulku a vyvola funkci na tvoreni tabulky
 function fetchJson_CreateTable() {
     return new Promise((resolve, reject) => {
         const nameFilter = document.getElementById("filter-by-name").value
         const trackFilter = document.getElementById("track-select-id").value
         const dateFilter = document.getElementById("date-select-id").value
 
-        const url = new URL(document.URL + "data")
+        const url = new URL(window.location.origin + "/data")
         if (nameFilter) {
             url.searchParams.append('name', nameFilter)
         }
@@ -138,42 +153,36 @@ function fetchJson_CreateTable() {
     })
 }
 
-//generuje tabulku
 function createTable(data) {
 
 
-    //najit tablku
     const table = document.getElementById("content-table")
-    //vymazat vsechny radky
     table.innerHTML = ""
     const thead = document.createElement('thead')
     const theadRow = document.createElement('tr')
     const cols = Object.keys(data[0])
 
-    //poradi se bude vytvare pouze kdyz zobrazuejeme jednu trat a nefiltrujeme dle jmena
     if (!document.getElementById("filter-by-name").value && document.getElementById("track-select-id").value !== "all") {
         const thPos = document.createElement('th')
         thPos.textContent = "#"
         theadRow.appendChild(thPos)
     }
 
-    //kolonka na jmeno
     const thName = document.createElement('th')
     thName.textContent = "jméno"
     theadRow.appendChild(thName)
 
-    //cas
     const thTime = document.createElement('th')
     thTime.textContent = "čas"
     theadRow.appendChild(thTime)
 
-    //trat
     const thTrack = document.createElement('th')
     thTrack.textContent = "trať"
     theadRow.appendChild(thTrack)
 
-    //datum
     const thDate = document.createElement('th')
+    thDate.classList.add("d-none")
+    thDate.classList.add("d-lg-block")
     thDate.textContent = "datum"
     theadRow.appendChild(thDate)
 
@@ -212,16 +221,21 @@ function createTable(data) {
 
         const tdTime = document.createElement('td')
         tdTime.textContent = formatTime(item['time'])
+        tdTime.onclick = () => { focusRow(item['id']) }
         tdTime.id = "time-" + item['id']
         row.appendChild(tdTime)
 
         const tdTrack = document.createElement('td')
         tdTrack.textContent = item['track']
+        tdTrack.onclick = () => { focusRow(item['id']) }
         tdTrack.id = "track-" + item['id']
         row.appendChild(tdTrack)
 
         const tdDate = document.createElement('td')
+        tdDate.classList.add("d-none")
+        tdDate.classList.add("d-lg-table-cell")
         tdDate.textContent = item['date']
+        tdDate.onclick = () => { focusRow(item['id']) }
         tdDate.id = "date-" + item['id']
         row.appendChild(tdDate)
 
@@ -325,6 +339,7 @@ function deleteRslt() {
 }
 
 function focusRow(id) {
+    id = Number(id)
     const nameF = document.getElementById("filter-by-name")
     nameF.value = ''
     const track = document.getElementById("track-select-id")
