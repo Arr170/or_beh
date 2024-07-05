@@ -46,7 +46,10 @@ def ext_rslt_post():
         new_result=Result(name=data["name"], time = data["time"], track = data["track"], date = data["date"])
         db.session.add(new_result)
         db.session.commit()
-        return "OK", 200
+        return_data={
+            "id": new_result.id
+        }
+        return jsonify(return_data), 200
     else:
         return "missing or wrong secret key", 418
 
