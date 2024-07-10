@@ -33,20 +33,25 @@
                         </a>
                         {% endif %}
                     </li>
+                    {% if current_user.is_authenticated %}
                     <li>
-                        {% if current_user.is_authenticated %}
                         <a href="{{ url_for('auth.logout') }}" class="nav-link">
                             Logout
                         </a>
-                        {% endif %}
                     </li>
+                    <li>
+                        <a href="{{ url_for('main.tracks')}}" class="nav-link">
+                            Tracks
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
     <section class="container-fluid">
-                {% block content %}
-                {% endblock %}
+        {% block content %}
+        {% endblock %}
     </section>
     <footer class="text-center mt-auto">
         <!-- <p class="text text-secondary">(this website does not use cookies)</p> -->

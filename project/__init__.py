@@ -30,7 +30,7 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    from .models import User, Result
+    from .models import User, Result, Track, Point
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -47,6 +47,18 @@ def create_app():
             init_admin = User(email = os.environ["ADMIN_MAIL"], name = "Admin",password=generate_password_hash(os.environ["ADMIN_PASS"], method='pbkdf2:sha1') )
             db.session.add(init_admin)
             db.session.commit()     
+
+        # #Create a new track
+        # new_track = Track(name='Track1')
+        # db.session.add(new_track)
+        # db.session.commit()
+
+        # # Create points associated with the track
+        # point1 = Point(number=1, track_id=new_track.id)
+        # point2 = Point(number=2, track_id=new_track.id)
+        # db.session.add(point1)
+        # db.session.add(point2)
+        # db.session.commit()
 
       # blueprint for auth routes in our app
     from .auth import auth as auth_blueprint

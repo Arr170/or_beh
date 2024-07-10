@@ -24,5 +24,29 @@ class Result(db.Model):
         }
 
 
+class Track(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(10))
+    points = db.relationship('Point', backref='track', lazy=True)
 
+    def to_dict(self):
+        return{
+            'id': self.id,
+            'name': self.name,
+            'points': [point.to_dict() for point in self.points]
+            
+            
+        }
+
+class Point(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    number = db.Column(db.Integer)
+    track_id = db.Column(db.Integer, db.ForeignKey('track.id'), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'number': self.number,
+            'track_id': self.track_id
+        }
     

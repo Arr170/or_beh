@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
-from .models import Result
+from .models import *
 import os, pandas
 from . import db
 
@@ -53,7 +53,56 @@ def ext_rslt_post():
     else:
         return "missing or wrong secret key", 418
 
+@main.route('/tracks', methods = ["GET"])
+@login_required
+def tracks():
+    return render_template('track_mng.html')
+    
+@main.route('/tracks_data', methods=["GET", "POST"])
+#@login_required
+def tracks_data():
+    if request.method == "GET":
+        tracks = Track.query.all()
+        print(tracks)  # List of Point objects
+        data = [row.to_dict() for row in tracks]
+        # for row in tracks:
+        #     print(row.to_dict())
+        #print(data)
 
+        return jsonify(data)
+    else:
+        print("post tracks data")
+        data = request.get_json()
+        new_track = Track(name=data["name"])
+        db.session.add(new_track)
+        db.session.commit()
+
+        for i in range(1, 16):
+            point_key = "point" + str(i)
+            print(point_key)
+            if point_key in data:
+                print(data[point_key])
+                new_point = Point(number=data[point_key], track_id = new_track.id)
+                db.session.add(new_point)
+        db.session.commit()
+
+        return jsonify({"message": "Track and points added successfully"})
+
+
+@main.route('/tracks_delete/<id>', methods=["DELETE"])
+@login_required
+def tracks_delete(id):
+    try:
+        record = Track.query.get(id)
+        for point in record.points:
+            db.session.delete(point)
+        print(record)
+        db.session.delete(record)
+        db.session.commit()
+        return "ok"
+    except Exception as e:
+        #print("nah, delete doesnt work")
+        return "error", 500
 
 @main.route('/data', methods=['GET'])
 def data():

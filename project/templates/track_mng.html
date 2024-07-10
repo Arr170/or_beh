@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="modal fade" id="delete-modal" tabindex="-1" aria-labelledby="deleteModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <label for="new-head-row" class="form-label">Název </label>
+                <input class="form-control" id="new-head-row" placeholder="vyplňte název tratě">
+                1.<input type="number" class="form-control" id="new-row-1"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                2.<input type="number" class="form-control" id="new-row-2"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                3.<input type="number" class="form-control" id="new-row-3"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                4.<input type="number" class="form-control" id="new-row-4"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                5.<input type="number" class="form-control" id="new-row-5"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                6.<input type="number" class="form-control" id="new-row-6"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                7.<input type="number" class="form-control" id="new-row-7"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                8.<input type="number" class="form-control" id="new-row-8"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                9.<input type="number" class="form-control" id="new-row-9"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                10.<input type="number" class="form-control" id="new-row-10"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                11.<input type="number" class="form-control" id="new-row-11"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                12.<input type="number" class="form-control" id="new-row-12"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                13.<input type="number" class="form-control" id="new-row-13"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                14.<input type="number" class="form-control" id="new-row-14"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+                15.<input type="number" class="form-control" id="new-row-15"
+                    placeholder="vyplňte číslo nebo nechte prazdné">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="close-modal">zrušit</button>
+                <button class="btn btn-success" onclick="addNew()">přidat</button>
+
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <table class="table table-hover" id="tracks-table">
+            <thead id="head">
+                <tr id="head-row">
+
+                </tr>
+            </thead>
+            <tbody id="body">
+                <tr id="row-1"></tr>
+                <tr id="row-2"></tr>
+                <tr id="row-3"></tr>
+                <tr id="row-4"></tr>
+                <tr id="row-5"></tr>
+                <tr id="row-6"></tr>
+                <tr id="row-7"></tr>
+                <tr id="row-8"></tr>
+                <tr id="row-9"></tr>
+                <tr id="row-10"></tr>
+                <tr id="row-11"></tr>
+                <tr id="row-12"></tr>
+                <tr id="row-13"></tr>
+                <tr id="row-14"></tr>
+                <tr id="row-15"></tr>
+                <tr id="row-delete"></tr>
+            </tbody>
+
+        </table>
+    </div>
+    <div class="col">
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" >Add
+            track
+        </button>
+    </div>
+
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        getTracks()
+    })
+
+
+
+    function getTracks() {
+        const url = new URL(window.location.origin + "/tracks_data")
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                displayTracks(data)
+            })
+
+    }
+
+    function displayTracks(data) {
+
+
+
+        data.forEach(track => {
+            title = document.createElement('th')
+            title.textContent = track.name
+            document.getElementById("head-row").appendChild(title)
+            let count = 1
+            track.points.forEach(point => {
+                cell = document.createElement('td')
+                cell.textContent = point.number
+                document.getElementById("row-" + count).appendChild(cell)
+                count++
+            })
+            while(count < 16){
+                cell = document.createElement('td')
+                cell.textContent = '_'
+                document.getElementById("row-" + count).appendChild(cell)
+                count++
+            }
+            btnCell = document.createElement('td')
+            btn = document.createElement('button')
+            btn.classList.add("btn")
+            btn.classList.add("btn-danger")
+            btn.classList.add("btn-sm")
+            btn.textContent = "odebrat"
+            btn.onclick = (() => {
+                deleteTrack(track.id)
+            })
+            btnCell.appendChild(btn)
+            document.getElementById("row-delete").appendChild(btnCell)
+        })
+
+    }
+
+    function deleteTrack(id) {
+
+        document.getElementById("head-row").innerHTML = ""
+        console.log(document.getElementById("head-row"))
+        for (let i = 1; i <= 15; i++) {
+
+            document.getElementById("row-" + i).innerHTML = ""
+            console.log(document.getElementById("row-" + i))
+
+        }
+        document.getElementById("row-delete").innerHTML = ""
+        console.log(document.getElementById("row-delete"))
+
+        console.log(id)
+        const url = '{{url_for("main.tracks_delete", id="")}}'
+        fetch(url + id,
+            { method: "DELETE" }
+        )
+            .then(res => console.log(res))
+            .then(() => { getTracks() })
+    }
+
+    function addNew() {
+
+        trackTitle = document.getElementById("new-head-row").value
+        data = {
+            "name": trackTitle
+        }
+        for (let i = 1; i <= 15; i++) {
+
+
+            value = document.getElementById("new-row-" + i).value
+            console.log(value)
+            if (value !== undefined && value !== '') {
+                data["point" + i] = value
+            }
+
+
+        }
+
+        const url = '{{url_for("main.tracks_data")}}'
+        fetch(url,
+            {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }
+        )
+            .then(res => console.log(res))
+            .then(() => { location.reload()})
+
+
+    }
+</script>
+{% endblock %}
