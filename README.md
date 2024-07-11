@@ -1,10 +1,10 @@
-#DEV MODE:
+# DEV MODE:
 1. vytvorit venv
 2. `pip install -r requirements.txt`
 3. `pip install python-dotenv` (jestli se vyskytne prislusna chyba)
 4. `flask run` pro rozbehnuti programu
 
-#PRODUCTION:
+# PRODUCTION:
 1. hosting: mne se vyplatil [render](https://render.com/), postup bude pro nej
 2. v nastaveni web servisu pridat github repo (vyplati se pro hotfixy) nebo nahrat samotny kod
 3. nastaveni:
