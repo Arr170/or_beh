@@ -49,18 +49,13 @@
 <div class="row justify-content-center ">
     <div class="col-lg-3 col-12">
 
-        <input placeholder="filter by name..." type="text" id="filter-by-name" class="form-control m-2">
+        <input placeholder="filtrovat podle jména..." type="text" id="filter-by-name" class="form-control m-2">
 
     </div>
 
     <div class="col-lg-1 col-5 m-2">
         <select class="form-select form-select-md" aria-label="Large select example" id="track-select-id">
             <option selected value="all">Všechny tratě</option>
-            <option value="A">Trať A</option>
-            <option value="B">Trať B</option>
-            <option value="C">Trať C</option>
-            <option value="D">Trať D</option>
-            <option value="E">Trať E</option>
         </select>
     </div>
     <div class="col-lg-1 col-5 m-2 align-self-end">
@@ -90,6 +85,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let id = params.get("forceFocus")
             focusRow(id)
         }})
+
+    parseTracks()
 })
 
 document.getElementById("filter-by-name").addEventListener('input', function () {
@@ -103,6 +100,23 @@ document.getElementById("track-select-id").addEventListener('change', function (
 document.getElementById("date-select-id").addEventListener('change', function () {
     fetchJson_CreateTable()
 })
+
+function parseTracks(){
+    const trackSelect = document.getElementById("track-select-id")
+
+    const url = '{{url_for("main.tracks_data")}}'
+
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(track=>{
+                const option = document.createElement('option')
+                option.value = track.name
+                option.textContent = track.name
+                trackSelect.appendChild(option)
+            })})
+}
 
 function formatTime(timeInMillSec) {
     var timeInSec = Math.floor(timeInMillSec/1000)

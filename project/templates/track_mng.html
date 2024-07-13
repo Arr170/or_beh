@@ -5,38 +5,12 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                <label for="new-head-row" class="form-label">Název </label>
+                <label for="new-head-row" class="form-label">Název tratě:</label>
                 <input class="form-control" id="new-head-row" placeholder="vyplňte název tratě">
-                1.<input type="number" class="form-control" id="new-row-1"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                2.<input type="number" class="form-control" id="new-row-2"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                3.<input type="number" class="form-control" id="new-row-3"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                4.<input type="number" class="form-control" id="new-row-4"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                5.<input type="number" class="form-control" id="new-row-5"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                6.<input type="number" class="form-control" id="new-row-6"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                7.<input type="number" class="form-control" id="new-row-7"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                8.<input type="number" class="form-control" id="new-row-8"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                9.<input type="number" class="form-control" id="new-row-9"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                10.<input type="number" class="form-control" id="new-row-10"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                11.<input type="number" class="form-control" id="new-row-11"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                12.<input type="number" class="form-control" id="new-row-12"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                13.<input type="number" class="form-control" id="new-row-13"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                14.<input type="number" class="form-control" id="new-row-14"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
-                15.<input type="number" class="form-control" id="new-row-15"
-                    placeholder="vyplňte číslo nebo nechte prazdné">
+                <div class="mb-3">
+                    <label for="trackTextArea" class="form-label">Body tratě, oddělené čárkami:</label>
+                    <textarea class="form-control" id="trackTextArea" rows="1" placeholder="1,2,3,4,5,6,7,8,9..."></textarea>
+                  </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="close-modal">zrušit</button>
@@ -59,21 +33,6 @@
                 </tr>
             </thead>
             <tbody id="body">
-                <tr id="row-1"></tr>
-                <tr id="row-2"></tr>
-                <tr id="row-3"></tr>
-                <tr id="row-4"></tr>
-                <tr id="row-5"></tr>
-                <tr id="row-6"></tr>
-                <tr id="row-7"></tr>
-                <tr id="row-8"></tr>
-                <tr id="row-9"></tr>
-                <tr id="row-10"></tr>
-                <tr id="row-11"></tr>
-                <tr id="row-12"></tr>
-                <tr id="row-13"></tr>
-                <tr id="row-14"></tr>
-                <tr id="row-15"></tr>
                 <tr id="row-delete"></tr>
             </tbody>
 
@@ -108,6 +67,12 @@
 
     function displayTracks(data) {
 
+        const tbody = document.getElementById("body")
+        for(let i = 1; i <= 256; i++){
+            tr = document.createElement('tr')
+            tr.id = "row-"+i
+            tbody.appendChild(tr)
+        }
 
 
         data.forEach(track => {
@@ -121,7 +86,7 @@
                 document.getElementById("row-" + count).appendChild(cell)
                 count++
             })
-            while(count < 16){
+            while(count < 256){
                 cell = document.createElement('td')
                 cell.textContent = '_'
                 document.getElementById("row-" + count).appendChild(cell)
@@ -146,7 +111,7 @@
 
         document.getElementById("head-row").innerHTML = ""
         console.log(document.getElementById("head-row"))
-        for (let i = 1; i <= 15; i++) {
+        for (let i = 1; i <= 256; i++) {
 
             document.getElementById("row-" + i).innerHTML = ""
             console.log(document.getElementById("row-" + i))
@@ -170,14 +135,15 @@
         data = {
             "name": trackTitle
         }
+        const val = document.getElementById("trackTextArea").value
+
+        const numStr = val.split(',')
+        const numbers = numStr.map(Number)
         for (let i = 1; i <= 15; i++) {
 
 
-            value = document.getElementById("new-row-" + i).value
-            console.log(value)
-            if (value !== undefined && value !== '') {
-                data["point" + i] = value
-            }
+            console.log(numbers[i-1])
+            data["point" + i] = numbers[i-1]
 
 
         }

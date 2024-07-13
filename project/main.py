@@ -77,7 +77,7 @@ def tracks_data():
         db.session.add(new_track)
         db.session.commit()
 
-        for i in range(1, 16):
+        for i in range(1, 256):
             point_key = "point" + str(i)
             print(point_key)
             if point_key in data:
