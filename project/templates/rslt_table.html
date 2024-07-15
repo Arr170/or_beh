@@ -72,12 +72,13 @@
 
 
 <div id="table-container">
-    <p id="loading-tab" ></p>
+    <p id="loading-tab" class="text-center"></p>
     <table class="table table-hover" id="content-table">
         <script >
 
 document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById("loading-tab").innerHTML="loafing..."
+    // console.log("loading")
+    document.getElementById("loading-tab").innerHTML="loading..."
     
     fetchJson_CreateTable()
         .then(()=>{
@@ -87,7 +88,10 @@ document.addEventListener('DOMContentLoaded', function () {
             let id = params.get("forceFocus")
             focusRow(id)
         }})
-
+        .then(()=>{
+            // console.log("loaded")
+            document.getElementById("loading-tab").innerHTML=""
+        })
     parseTracks()
 })
 
