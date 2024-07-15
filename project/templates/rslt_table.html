@@ -72,10 +72,12 @@
 
 
 <div id="table-container">
+    <p id="loading-tab" ></p>
     <table class="table table-hover" id="content-table">
         <script >
 
 document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById("loading-tab").innerHTML="loafing..."
     
     fetchJson_CreateTable()
         .then(()=>{
@@ -353,6 +355,13 @@ function deleteRslt() {
 }
 
 function focusRow(id) {
+    let color = ""
+    if(document.getElementById("html-tag").getAttribute("data-bs-theme") === "light"){
+        color = "orange "
+    }
+    else{
+        color = "yellow"
+    }
     id = Number(id)
     const nameF = document.getElementById("filter-by-name")
     nameF.value = ''
@@ -361,12 +370,12 @@ function focusRow(id) {
     fetchJson_CreateTable().then(() => {
         const row = document.getElementById(id)
         row.scrollIntoView({ block: 'center', behavior: 'smooth' })
-        row.style.borderColor = "yellow"
-        document.getElementById("pos-" + id).style.color = "yellow"
-        document.getElementById("name-" + id).style.color = "yellow"
-        document.getElementById("date-" + id).style.color = "yellow"
-        document.getElementById("time-" + id).style.color = "yellow"
-        document.getElementById("track-" + id).style.color = "yellow"
+        row.style.borderColor = color
+        document.getElementById("pos-" + id).style.color = color
+        document.getElementById("name-" + id).style.color = color
+        document.getElementById("date-" + id).style.color = color
+        document.getElementById("time-" + id).style.color = color
+        document.getElementById("track-" + id).style.color = color
     })
 }
 
