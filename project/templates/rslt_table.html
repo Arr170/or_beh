@@ -45,11 +45,10 @@
     </div>
 </div>
 {% endif %}
+<div class="filter-container row justify-content-center bg-body min-vw-100" id="filter-container">
+    <div class="col-lg-3 col-12 m-2 align-self-center">
 
-<div class="row justify-content-center ">
-    <div class="col-lg-3 col-12">
-
-        <input placeholder="filtrovat podle jména..." type="text" id="filter-by-name" class="form-control m-2">
+        <input placeholder="filtrovat podle jména..." type="text" id="filter-by-name" class="form-control">
 
     </div>
 
@@ -68,320 +67,364 @@
         </select>
     </div>
 </div>
+<div id="buffer"></div>
 
 
 
 <div id="table-container">
-    <p id="loading-tab" class="text-center"></p>
+    <div class="arrow-up" id="arrow-up">
+        <button class="btn" onclick="goTop()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                class="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
+                <path
+                    d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z" />
+            </svg>
+        </button>
+    </div>
+    <div class="container-fluid min-vh-100 d-flex justify-content-center align-items-center" id="loading-container">
+        <p id="loading-tab" class="text-center"></p>
+    </div>
     <table class="table table-hover" id="content-table">
-        <script >
+        <script>
+            const filterContainer = document.getElementById("filter-container")
+            const arrow = document.getElementById("arrow-up")
+            let navHeight = document.getElementById("nav").offsetHeight
+            let filterHeight = document.getElementById("filter-container").offsetHeight
+            window.addEventListener('scroll', function () {
+                document.getElementById("buffer").offsetHeight=filterHeight
+                const filterContainer = document.getElementById("filter-container")
+                const arrow = document.getElementById("arrow-up")
+                let navHeight = document.getElementById("nav").offsetHeight
+                console.log(navHeight)
+                if (window.scrollY > navHeight) {
+                    filterContainer.style.position = "fixed"
+                    filterContainer.style.top = "0"
+                    arrow.style.display = "flex"
+                    arrow.style.top = navHeight
 
-document.addEventListener('DOMContentLoaded', function () {
-    // console.log("loading")
-    document.getElementById("loading-tab").innerHTML="loading..."
-    
-    fetchJson_CreateTable()
-        .then(()=>{
-        const url = new URL(window.location.href)
-        params = new URLSearchParams(url.search)
-        if(params.has("forceFocus")){
-            let id = params.get("forceFocus")
-            focusRow(id)
-        }})
-        .then(()=>{
-            // console.log("loaded")
-            document.getElementById("loading-tab").innerHTML=""
-        })
-    parseTracks()
-})
-
-document.getElementById("filter-by-name").addEventListener('input', function () {
-    fetchJson_CreateTable()
-})
-
-document.getElementById("track-select-id").addEventListener('change', function () {
-    fetchJson_CreateTable()
-})
-
-document.getElementById("date-select-id").addEventListener('change', function () {
-    fetchJson_CreateTable()
-})
-
-function parseTracks(){
-    const trackSelect = document.getElementById("track-select-id")
-
-    const url = '{{url_for("main.tracks_data")}}'
+                } else {
+                    filterContainer.style.position = "relative"
+                    filterContainer.style.top = ""
+                    filterContainer.style.width = "100%"
+                    arrow.style.display = "none"
+                }
+            }, false);
 
 
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(track=>{
-                const option = document.createElement('option')
-                option.value = track.name
-                option.textContent = track.name
-                trackSelect.appendChild(option)
-            })})
-}
+            document.addEventListener('DOMContentLoaded', function () {
+                // console.log("loading")
+                document.getElementById("loading-container").classList.add("d-flex")
+                document.getElementById("loading-tab").innerHTML = "loading..."
 
-function formatTime(timeInMillSec) {
-    var timeInSec = Math.floor(timeInMillSec/1000)
-    var millis = timeInMillSec%1000
-    var hours = Math.floor(timeInSec / 3600)
-    var minutes = Math.floor((timeInSec - hours * 3600) / 60) % 60
-    var seconds = timeInSec % 60
-    var formatted = ""
-    if(hours){
-        formatted = formatted + ("00" + hours).slice(-2) + ":"
-    }
-    formatted = formatted + ("00" + minutes).slice(-2) + ":"+("00"+seconds).slice(-2) + "." + ("000"+millis).slice(-3)
-
-
-    return formatted
-}
-
-
-function fetchJson_CreateTable() {
-    return new Promise((resolve, reject) => {
-        const nameFilter = document.getElementById("filter-by-name").value
-        const trackFilter = document.getElementById("track-select-id").value
-        const dateFilter = document.getElementById("date-select-id").value
-
-        const url = new URL(window.location.origin + "/data")
-        if (nameFilter) {
-            url.searchParams.append('name', nameFilter)
-        }
-        if (trackFilter !== "all") {
-            url.searchParams.append('track', trackFilter)
-        }
-        if (dateFilter !== "all") {
-            url.searchParams.append('date', dateFilter)
-        }
-
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                //console.log(data)
-                createTable(data)
-                resolve()
-            })
-            .catch(error => {
-                console.error('Error fetching JSON:', error)
-                reject(error)
+                fetchJson_CreateTable()
+                    .then(() => {
+                        const url = new URL(window.location.href)
+                        params = new URLSearchParams(url.search)
+                        if (params.has("forceFocus")) {
+                            let id = params.get("forceFocus")
+                            focusRow(id)
+                        }
+                    })
+                    .then(() => {
+                        // console.log("loaded")
+                        document.getElementById("loading-tab").innerHTML = ""
+                        document.getElementById("loading-container").classList.add("d-none")
+                    })
+                parseTracks()
             })
 
-    })
-}
-
-function createTable(data) {
-
-
-    const table = document.getElementById("content-table")
-    table.innerHTML = ""
-    const thead = document.createElement('thead')
-    const theadRow = document.createElement('tr')
-    const cols = Object.keys(data[0])
-
-    if (!document.getElementById("filter-by-name").value && document.getElementById("track-select-id").value !== "all") {
-        const thPos = document.createElement('th')
-        thPos.textContent = "#"
-        theadRow.appendChild(thPos)
-    }
-
-    const thName = document.createElement('th')
-    thName.textContent = "jméno"
-    theadRow.appendChild(thName)
-
-    const thTime = document.createElement('th')
-    thTime.textContent = "čas"
-    theadRow.appendChild(thTime)
-
-    const thTrack = document.createElement('th')
-    thTrack.textContent = "trať"
-    theadRow.appendChild(thTrack)
-
-    const thDate = document.createElement('th')
-    thDate.classList.add("d-none")
-    thDate.classList.add("d-lg-block")
-    thDate.textContent = "datum"
-    theadRow.appendChild(thDate)
-
-    "{% if current_user.is_authenticated %}"
-    const thBtns = document.createElement('th')
-    theadRow.appendChild(thBtns)
-    "{% endif %}"
-
-
-
-    thead.appendChild(theadRow)
-    table.appendChild(thead)
-
-    const tbody = document.createElement('tbody')
-
-    //data 
-    let position = 1//bude zobrazovat umisteni ucastnika
-    data.forEach(item => {
-
-        const row = document.createElement('tr')
-        row.id = item['id']
-
-        if (!document.getElementById("filter-by-name").value && document.getElementById("track-select-id").value !== "all") {
-            const tdPos = document.createElement('td')
-            tdPos.textContent = position++ + '.'
-            tdPos.id = "pos-" + item['id']
-            row.appendChild(tdPos)
-        }
-
-        const tdName = document.createElement('td')
-        //tdName.classList.add("text-center")
-        tdName.textContent = item['name']
-        tdName.onclick = () => { focusRow(item['id']) } //kliknutim na jmeno se zobrazi tabulka s jednou trati a nakliknuty zaznam se zvyrazni
-        tdName.id = "name-" + item['id']
-        row.appendChild(tdName)
-
-        const tdTime = document.createElement('td')
-        tdTime.textContent = formatTime(item['time'])
-        tdTime.onclick = () => { focusRow(item['id']) }
-        tdTime.id = "time-" + item['id']
-        row.appendChild(tdTime)
-
-        const tdTrack = document.createElement('td')
-        tdTrack.textContent = item['track']
-        tdTrack.onclick = () => { focusRow(item['id']) }
-        tdTrack.id = "track-" + item['id']
-        row.appendChild(tdTrack)
-
-        const tdDate = document.createElement('td')
-        tdDate.classList.add("d-none")
-        tdDate.classList.add("d-lg-table-cell")
-        tdDate.textContent = item['date']
-        tdDate.onclick = () => { focusRow(item['id']) }
-        tdDate.id = "date-" + item['id']
-        row.appendChild(tdDate)
-
-        //overit jestli admin je prihlasen, jestli ano, zobrazi ze tlacitka na upravu vysledku
-        "{% if current_user.is_authenticated %}"
-        const tdB = document.createElement('td')
-
-        //mazaci tlacitko
-        const deleteButton = document.createElement('button')
-        deleteButton.id = "edit-button-" + item['id']
-        deleteButton.textContent = "delete"
-        deleteButton.classList.add("btn")
-        deleteButton.classList.add("btn-danger")
-        deleteButton.setAttribute("data-bs-toggle", "modal")
-        deleteButton.setAttribute("data-bs-target", "#delete-modal")
-        deleteButton.onclick = (() => {
-            const modalName = document.getElementById("delete-name")
-            modalName.textContent = document.getElementById("name-" + item['id']).textContent
-
-            const modalTime = document.getElementById("delete-time")
-            modalTime.textContent = "Čas: " + document.getElementById("time-" + item['id']).textContent
-
-            const modalTrack = document.getElementById("delete-track")
-            modalTrack.textContent = "Trať: " + document.getElementById("track-" + item['id']).textContent
-
-            const modalId = document.getElementById("delete-id")
-            modalId.textContent = item['id']
-        })
-
-        //upravovaci tlacitko
-        const changeButton = document.createElement('button')
-        changeButton.id = "change-button" + item['id']
-        changeButton.textContent = "change"
-        changeButton.classList.add("btn")
-        changeButton.classList.add("btn-warning")
-        changeButton.setAttribute("data-bs-toggle", "modal")
-        changeButton.setAttribute("data-bs-target", "#change-modal")
-        changeButton.onclick = (()=>{
-
-            const modalNamechange = document.getElementById("change-name-input")
-            modalNamechange.value = document.getElementById("name-" + item['id']).textContent
-
-            const modalTime = document.getElementById("change-time")
-            modalTime.textContent = "Čas: " + document.getElementById("time-" + item['id']).textContent
-
-            const modalTrack = document.getElementById("change-track")
-            modalTrack.textContent = "Trať: " + document.getElementById("track-" + item['id']).textContent
-
-            const modalId = document.getElementById("change-id")
-            modalId.textContent = item['id']
-        })
-        tdB.classList.add("text-center")
-        tdB.appendChild(deleteButton)
-        tdB.appendChild(changeButton)
-        row.appendChild(tdB)
-
-        "{% endif %}"
-        tbody.appendChild(row)
-    })
-    table.appendChild(tbody)
-
-
-}
-
-function changeRslt(){
-    const id = document.getElementById("change-id").textContent
-    const close = document.getElementById("close-modal")
-    const name = document.getElementById("change-name-input")
-    const data = {
-        name: name.value
-    }
-    close.click()
-    const url = '{{url_for("main.rslt_change", id="")}}'
-    fetch(url+id, 
-        {
-            method: "PUT", 
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }
-    )
-        .then(res=>console.log(res))
-        .then(location.reload())
-        .catch(error => {
-                console.error('Error fetching JSON:', error)
+            document.getElementById("filter-by-name").addEventListener('input', function () {
+                fetchJson_CreateTable()
             })
-    
-}
 
-function deleteRslt() {
-    const id = document.getElementById("delete-id").textContent
-    const close = document.getElementById("close-modal")
-    close.click()
-    const url = '{{url_for("main.rslt_remove", id="")}}'
-    fetch(url + id,
-        { method: "DELETE" }
-    )
-        .then(res => console.log(res))
-        .then(location.reload())
-}
+            document.getElementById("track-select-id").addEventListener('change', function () {
+                fetchJson_CreateTable()
+            })
 
-function focusRow(id) {
-    let color = ""
-    if(document.getElementById("html-tag").getAttribute("data-bs-theme") === "light"){
-        color = "orange "
-    }
-    else{
-        color = "yellow"
-    }
-    id = Number(id)
-    const nameF = document.getElementById("filter-by-name")
-    nameF.value = ''
-    const track = document.getElementById("track-select-id")
-    track.value = document.getElementById("track-" + id).textContent
-    fetchJson_CreateTable().then(() => {
-        const row = document.getElementById(id)
-        row.scrollIntoView({ block: 'center', behavior: 'smooth' })
-        row.style.borderColor = color
-        document.getElementById("pos-" + id).style.color = color
-        document.getElementById("name-" + id).style.color = color
-        document.getElementById("date-" + id).style.color = color
-        document.getElementById("time-" + id).style.color = color
-        document.getElementById("track-" + id).style.color = color
-    })
-}
+            document.getElementById("date-select-id").addEventListener('change', function () {
+                fetchJson_CreateTable()
+            })
+
+            function parseTracks() {
+                const trackSelect = document.getElementById("track-select-id")
+
+                const url = '{{url_for("main.tracks_data")}}'
+
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(track => {
+                            const option = document.createElement('option')
+                            option.value = track.name
+                            option.textContent = "Trať " + track.name
+                            trackSelect.appendChild(option)
+                        })
+                    })
+            }
+
+            function formatTime(timeInMillSec) {
+                var timeInSec = Math.floor(timeInMillSec / 1000)
+                var millis = timeInMillSec % 1000
+                var hours = Math.floor(timeInSec / 3600)
+                var minutes = Math.floor((timeInSec - hours * 3600) / 60) % 60
+                var seconds = timeInSec % 60
+                var formatted = ""
+                if (hours) {
+                    formatted = formatted + ("00" + hours).slice(-2) + ":"
+                }
+                formatted = formatted + ("00" + minutes).slice(-2) + ":" + ("00" + seconds).slice(-2) + "." + ("000" + millis).slice(-3)
+
+
+                return formatted
+            }
+
+
+            function fetchJson_CreateTable() {
+                return new Promise((resolve, reject) => {
+                    const nameFilter = document.getElementById("filter-by-name").value
+                    const trackFilter = document.getElementById("track-select-id").value
+                    const dateFilter = document.getElementById("date-select-id").value
+
+                    const url = new URL(window.location.origin + "/data")
+                    if (nameFilter) {
+                        url.searchParams.append('name', nameFilter)
+                    }
+                    if (trackFilter !== "all") {
+                        url.searchParams.append('track', trackFilter)
+                    }
+                    if (dateFilter !== "all") {
+                        url.searchParams.append('date', dateFilter)
+                    }
+
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            //console.log(data)
+                            createTable(data)
+                            resolve()
+                        })
+                        .catch(error => {
+                            console.error('Error fetching JSON:', error)
+                            reject(error)
+                        })
+
+                })
+            }
+
+            function createTable(data) {
+
+
+                const table = document.getElementById("content-table")
+                table.innerHTML = ""
+                const thead = document.createElement('thead')
+                const theadRow = document.createElement('tr')
+                const cols = Object.keys(data[0])
+
+                if (!document.getElementById("filter-by-name").value && document.getElementById("track-select-id").value !== "all") {
+                    const thPos = document.createElement('th')
+                    thPos.textContent = "#"
+                    theadRow.appendChild(thPos)
+                }
+
+                const thName = document.createElement('th')
+                thName.textContent = "jméno"
+                theadRow.appendChild(thName)
+
+                const thTime = document.createElement('th')
+                thTime.textContent = "čas"
+                theadRow.appendChild(thTime)
+
+                const thTrack = document.createElement('th')
+                thTrack.textContent = "trať"
+                theadRow.appendChild(thTrack)
+
+                const thDate = document.createElement('th')
+                thDate.classList.add("d-none")
+                thDate.classList.add("d-lg-block")
+                thDate.textContent = "datum"
+                theadRow.appendChild(thDate)
+
+                "{% if current_user.is_authenticated %}"
+                const thBtns = document.createElement('th')
+                theadRow.appendChild(thBtns)
+                "{% endif %}"
+
+
+
+                thead.appendChild(theadRow)
+                table.appendChild(thead)
+
+                const tbody = document.createElement('tbody')
+
+                //data 
+                let position = 1//bude zobrazovat umisteni ucastnika
+                data.forEach(item => {
+
+                    const row = document.createElement('tr')
+                    row.id = item['id']
+
+                    if (!document.getElementById("filter-by-name").value && document.getElementById("track-select-id").value !== "all") {
+                        const tdPos = document.createElement('td')
+                        tdPos.textContent = position++ + '.'
+                        tdPos.id = "pos-" + item['id']
+                        row.appendChild(tdPos)
+                    }
+
+                    const tdName = document.createElement('td')
+                    //tdName.classList.add("text-center")
+                    tdName.textContent = item['name']
+                    tdName.onclick = () => { focusRow(item['id']) } //kliknutim na jmeno se zobrazi tabulka s jednou trati a nakliknuty zaznam se zvyrazni
+                    tdName.id = "name-" + item['id']
+                    row.appendChild(tdName)
+
+                    const tdTime = document.createElement('td')
+                    tdTime.textContent = formatTime(item['time'])
+                    tdTime.onclick = () => { focusRow(item['id']) }
+                    tdTime.id = "time-" + item['id']
+                    row.appendChild(tdTime)
+
+                    const tdTrack = document.createElement('td')
+                    tdTrack.textContent = item['track']
+                    tdTrack.onclick = () => { focusRow(item['id']) }
+                    tdTrack.id = "track-" + item['id']
+                    row.appendChild(tdTrack)
+
+                    const tdDate = document.createElement('td')
+                    tdDate.classList.add("d-none")
+                    tdDate.classList.add("d-lg-table-cell")
+                    tdDate.textContent = item['date']
+                    tdDate.onclick = () => { focusRow(item['id']) }
+                    tdDate.id = "date-" + item['id']
+                    row.appendChild(tdDate)
+
+                    //overit jestli admin je prihlasen, jestli ano, zobrazi ze tlacitka na upravu vysledku
+                    "{% if current_user.is_authenticated %}"
+                    const tdB = document.createElement('td')
+
+                    //mazaci tlacitko
+                    const deleteButton = document.createElement('button')
+                    deleteButton.id = "edit-button-" + item['id']
+                    deleteButton.textContent = "delete"
+                    deleteButton.classList.add("btn")
+                    deleteButton.classList.add("btn-danger")
+                    deleteButton.setAttribute("data-bs-toggle", "modal")
+                    deleteButton.setAttribute("data-bs-target", "#delete-modal")
+                    deleteButton.onclick = (() => {
+                        const modalName = document.getElementById("delete-name")
+                        modalName.textContent = document.getElementById("name-" + item['id']).textContent
+
+                        const modalTime = document.getElementById("delete-time")
+                        modalTime.textContent = "Čas: " + document.getElementById("time-" + item['id']).textContent
+
+                        const modalTrack = document.getElementById("delete-track")
+                        modalTrack.textContent = "Trať: " + document.getElementById("track-" + item['id']).textContent
+
+                        const modalId = document.getElementById("delete-id")
+                        modalId.textContent = item['id']
+                    })
+
+                    //upravovaci tlacitko
+                    const changeButton = document.createElement('button')
+                    changeButton.id = "change-button" + item['id']
+                    changeButton.textContent = "change"
+                    changeButton.classList.add("btn")
+                    changeButton.classList.add("btn-warning")
+                    changeButton.setAttribute("data-bs-toggle", "modal")
+                    changeButton.setAttribute("data-bs-target", "#change-modal")
+                    changeButton.onclick = (() => {
+
+                        const modalNamechange = document.getElementById("change-name-input")
+                        modalNamechange.value = document.getElementById("name-" + item['id']).textContent
+
+                        const modalTime = document.getElementById("change-time")
+                        modalTime.textContent = "Čas: " + document.getElementById("time-" + item['id']).textContent
+
+                        const modalTrack = document.getElementById("change-track")
+                        modalTrack.textContent = "Trať: " + document.getElementById("track-" + item['id']).textContent
+
+                        const modalId = document.getElementById("change-id")
+                        modalId.textContent = item['id']
+                    })
+                    tdB.classList.add("text-center")
+                    tdB.appendChild(deleteButton)
+                    tdB.appendChild(changeButton)
+                    row.appendChild(tdB)
+
+                    "{% endif %}"
+                    tbody.appendChild(row)
+                })
+                table.appendChild(tbody)
+
+
+            }
+
+            function changeRslt() {
+                const id = document.getElementById("change-id").textContent
+                const close = document.getElementById("close-modal")
+                const name = document.getElementById("change-name-input")
+                const data = {
+                    name: name.value
+                }
+                close.click()
+                const url = '{{url_for("main.rslt_change", id="")}}'
+                fetch(url + id,
+                    {
+                        method: "PUT",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    }
+                )
+                    .then(res => console.log(res))
+                    .then(location.reload())
+                    .catch(error => {
+                        console.error('Error fetching JSON:', error)
+                    })
+
+            }
+
+            function deleteRslt() {
+                const id = document.getElementById("delete-id").textContent
+                const close = document.getElementById("close-modal")
+                close.click()
+                const url = '{{url_for("main.rslt_remove", id="")}}'
+                fetch(url + id,
+                    { method: "DELETE" }
+                )
+                    .then(res => console.log(res))
+                    .then(location.reload())
+            }
+
+            function focusRow(id) {
+                let color = ""
+                if (document.getElementById("html-tag").getAttribute("data-bs-theme") === "light") {
+                    color = "blue "
+                }
+                else {
+                    color = "yellow"
+                }
+                id = Number(id)
+                const nameF = document.getElementById("filter-by-name")
+                nameF.value = ''
+                const track = document.getElementById("track-select-id")
+                track.value = document.getElementById("track-" + id).textContent
+                fetchJson_CreateTable().then(() => {
+                    const row = document.getElementById(id)
+                    row.scrollIntoView({ block: 'center', behavior: 'smooth' })
+                    row.style.borderColor = color
+                    document.getElementById("pos-" + id).style.color = color
+                    document.getElementById("name-" + id).style.color = color
+                    document.getElementById("date-" + id).style.color = color
+                    document.getElementById("time-" + id).style.color = color
+                    document.getElementById("track-" + id).style.color = color
+                })
+            }
+
+            function goTop(){
+                window.scrollY = navHeight
+            }
 
 
 
@@ -391,4 +434,17 @@ function focusRow(id) {
 </div>
 
 
+<style>
+    .arrow-up {
+        position: fixed;
+        z-index: 1000;
+        display: none;
+        right: 30px;
+    }
+
+    .filter-container {
+        z-index: 1000;
+        transition: top 0.3s;
+    }
+</style>
 {% endblock %}
