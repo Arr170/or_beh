@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+import logging
 
 from werkzeug.security import generate_password_hash
 import os
@@ -14,10 +15,13 @@ else:
 
 db = SQLAlchemy()
 
+logging.basicConfig(filename="app.log", level=logging.INFO)
+
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'jsemlinygenerovat'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.getcwd(),COMP_PATH, 'users.db')
+
 
     db.init_app(app)
 
