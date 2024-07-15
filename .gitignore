@@ -1,5 +1,6 @@
 /evn
 /env
+*.pyc
 *.env
-/data
+*.db
 *.log
