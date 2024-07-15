@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 import logging
@@ -15,7 +15,21 @@ else:
 
 db = SQLAlchemy()
 
-logging.basicConfig(filename="app.log", level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(name)s : %(message)s',
+)
+
+file_handler = logging.FileHandler("app.log")
+file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(name)s : %(message)s'))
+logging.getLogger().addHandler(file_handler)
+
+logger = logging.getLogger(__name__)
+
+werkzeug_logger = logging.getLogger('werkzeug')
+werkzeug_logger.setLevel(logging.INFO)
+werkzeug_logger.addHandler(file_handler)
+
 
 def create_app():
     app = Flask(__name__)
@@ -64,6 +78,10 @@ def create_app():
         # db.session.add(point2)
         # db.session.commit()
 
+    @app.before_request
+    def log_request_info():
+        logger.info('Request: %s %s', request.method, request.url)
+
       # blueprint for auth routes in our app
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
@@ -73,3 +91,5 @@ def create_app():
     app.register_blueprint(main_blueprint)    
 
     return app
+
+

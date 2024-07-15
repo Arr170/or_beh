@@ -3,9 +3,20 @@ from flask_login import login_required, current_user
 from .models import *
 import os, pandas
 from . import db
+import logging
+from logging.handlers import *
 
 
 main = Blueprint('main', __name__)
+
+# logger = logging.getLogger("")
+
+# consoleHandler = logging.StreamHandler()
+# logger.addHandler(consoleHandler)
+
+# fileHandler= RotatingFileHandler(filename="app.log")
+# logger.addHandler(fileHandler)
+
 
 @main.route('/results_edit', methods=["PUT"])
 @login_required
