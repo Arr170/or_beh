@@ -60,6 +60,11 @@ def ext_rslt_post():
         return_data={
             "id": new_result.id
         }
+        is_date = Date.query.filter_by(date=data["date"]).first()
+        if not is_date:
+            new_date = Date(date=data["date"])
+            db.session.add(new_date)
+            db.session.commit()
         return jsonify(return_data), 200
     else:
         return "missing or wrong secret key", 418
@@ -68,6 +73,12 @@ def ext_rslt_post():
 @login_required
 def tracks():
     return render_template('track_mng.html')
+
+@main.route('/dates', methods=["GET"])
+def dates():
+    dates = Date.query.all()
+    data = [row.to_dict() for row in dates]
+    return jsonify(data)
     
 @main.route('/tracks_data', methods=["GET", "POST"])
 #@login_required

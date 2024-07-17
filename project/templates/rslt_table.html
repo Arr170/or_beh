@@ -60,10 +60,6 @@
     <div class="col-lg-1 col-5 m-2 align-self-end">
         <select class="form-select form-select-md" aria-label="Large select example" id="date-select-id">
             <option selected value="all">Datum</option>
-            <option value="10.7.">10.7.</option>
-            <option value="11.7.">11.7.</option>
-            <option value="12.7.">12.7.</option>
-            <option value="13.7.">13.7.</option>
         </select>
     </div>
 </div>
@@ -133,6 +129,7 @@
                         document.getElementById("loading-container").classList.add("d-none")
                     })
                 parseTracks()
+                parseDates()
             })
 
             document.getElementById("filter-by-name").addEventListener('input', function () {
@@ -161,6 +158,24 @@
                             option.value = track.name
                             option.textContent = "Trať " + track.name
                             trackSelect.appendChild(option)
+                        })
+                    })
+            }
+
+            function parseDates(){
+
+                const dateSelect = document.getElementById("date-select-id")
+
+                const url = '{{url_for("main.dates")}}'
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(date => {
+                            const option = document.createElement('option')
+                            option.value = date.date
+                            option.textContent = date.date
+                            dateSelect.appendChild(option)
                         })
                     })
             }

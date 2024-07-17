@@ -11,8 +11,8 @@ class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     time = db.Column(db.Integer)
-    track = db.Column(db.String(1))
-    date = db.Column(db.String(10))\
+    track = db.Column(db.String(10))
+    date = db.Column(db.String(10))
     
     def to_dict(self):
         return {
@@ -23,6 +23,15 @@ class Result(db.Model):
             'date': self.date
         }
 
+class Date(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    date = db.Column(db.String(10))
+
+    def to_dict(self):
+        return{
+            'id': self.id,
+            'date': self.date
+        }
 
 class Track(db.Model):
     id = db.Column(db.Integer, primary_key=True)
