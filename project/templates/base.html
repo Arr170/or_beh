@@ -75,18 +75,39 @@
     </footer>
 
     <script>
-        function changeMode() {
-            console.log("changing")
-            const html = document.getElementById("html-tag")
-            const theme = html.getAttribute("data-bs-theme")
-            if (theme === "dark") {
+
+        const html = document.getElementById("html-tag")
+        let tagTheme = html.getAttribute("data-bs-theme")
+        let sessionTheme = sessionStorage.getItem("theme")
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            tagTheme = html.getAttribute("data-bs-theme")
+            sessionTheme = sessionStorage.getItem("theme")
+            console.log(sessionTheme)
+            if (sessionTheme === "light") {
 
                 html.setAttribute("data-bs-theme", "light")
                 document.getElementById("change-mode-btn").innerHTML = "<sun-icon></sun-icon>"
 
             }
+            if (sessionTheme === "dark") {
+                html.setAttribute("data-bs-theme", "dark")
+                document.getElementById("change-mode-btn").innerHTML = "<moon-icon></moon-icon>"
+            }
+        })
+
+        function changeMode() {
+            tagTheme = html.getAttribute("data-bs-theme")
+            if (tagTheme === "dark") {
+
+                html.setAttribute("data-bs-theme", "light")
+                sessionStorage.setItem("theme", "light")
+                document.getElementById("change-mode-btn").innerHTML = "<sun-icon></sun-icon>"
+
+            }
             else {
                 html.setAttribute("data-bs-theme", "dark")
+                sessionStorage.setItem("theme", "dark")
                 document.getElementById("change-mode-btn").innerHTML = "<moon-icon></moon-icon>"
             }
         }
