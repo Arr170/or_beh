@@ -183,7 +183,6 @@
 
             function formatTime(timeInMillSec) {
                 var timeInSec = Math.floor(timeInMillSec / 1000)
-                var millis = timeInMillSec % 1000
                 var hours = Math.floor(timeInSec / 3600)
                 var minutes = Math.floor((timeInSec - hours * 3600) / 60) % 60
                 var seconds = timeInSec % 60
@@ -191,7 +190,7 @@
                 if (hours) {
                     formatted = formatted + ("00" + hours).slice(-2) + ":"
                 }
-                formatted = formatted + ("00" + minutes).slice(-2) + ":" + ("00" + seconds).slice(-2) + "." + ("000" + millis).slice(-3)
+                formatted = formatted + ("00" + minutes).slice(-2) + ":" + ("00" + seconds).slice(-2)
 
 
                 return formatted
