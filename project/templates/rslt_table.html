@@ -93,7 +93,7 @@
                 const filterContainer = document.getElementById("filter-container")
                 const arrow = document.getElementById("arrow-up")
                 let navHeight = document.getElementById("nav").offsetHeight
-                console.log(navHeight)
+                //console.log(navHeight)
                 if (window.scrollY > navHeight) {
                     filterContainer.style.position = "fixed"
                     filterContainer.style.top = "0"
@@ -192,7 +192,7 @@
                 if (hours) {
                     formatted = formatted + ("00" + hours).slice(-2) + ":"
                 }
-                formatted = formatted + ("00" + minutes).slice(-2) + ":" + ("00" + seconds).slice(-2) + "." + ("00" + milles).slice(-2)
+                formatted = formatted + ("00" + minutes).slice(-2) + ":" + ("00" + seconds).slice(-2) + "." + ("00" + millis).slice(-2)
 
 
                 return formatted
@@ -396,7 +396,7 @@
                         body: JSON.stringify(data)
                     }
                 )
-                    .then(res => console.log(res))
+                    //.then(res => console.log(res))
                     .then(location.reload())
                     .catch(error => {
                         console.error('Error fetching JSON:', error)
@@ -412,7 +412,7 @@
                 fetch(url + id,
                     { method: "DELETE" }
                 )
-                    .then(res => console.log(res))
+                    //.then(res => console.log(res))
                     .then(location.reload())
             }
 
