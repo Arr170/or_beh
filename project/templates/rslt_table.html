@@ -126,7 +126,9 @@
                         params = new URLSearchParams(url.search)
                         if (params.has("forceFocus")) {
                             let id = params.get("forceFocus")
-                            focusRow(id)
+                            if(id){
+                                focusRow(id)
+                            }
                         }
                     })
                     .then(() => {
@@ -187,10 +189,10 @@
                     })
             }
 
-            function formatTime(timeInMillSec) {
-                var millis = timeInMillSec % 1000
-                millis = Math.floor(millis/10)
-                var timeInSec = Math.floor(timeInMillSec / 1000)
+            function formatTime(timeInTensOfMillSec) {
+                var tensOfMillis = timeInTensOfMillSec % 100
+                tensOfMillis = Math.floor(tensOfMillis/10)
+                var timeInSec = Math.floor(timeInTensOfMillSec / 100)
                 var hours = Math.floor(timeInSec / 3600)
                 var minutes = Math.floor((timeInSec - hours * 3600) / 60) % 60
                 var seconds = timeInSec % 60
@@ -198,7 +200,7 @@
                 if (hours) {
                     formatted = formatted + ("00" + hours).slice(-2) + ":"
                 }
-                formatted = formatted + ("00" + minutes).slice(-2) + ":" + ("00" + seconds).slice(-2) + "." + ("00" + millis).slice(-2)
+                formatted = formatted + ("00" + minutes).slice(-2) + ":" + ("00" + seconds).slice(-2) + "." + ("00" + tensOfMillis).slice(-2)
 
 
                 return formatted
@@ -283,15 +285,20 @@
                 const tbody = document.createElement('tbody')
 
                 //data 
-                let position = 1//bude zobrazovat umisteni ucastnika
+                let position = 0//bude zobrazovat umisteni ucastnika
+                let prevTime = 0
                 data.forEach(item => {
 
                     const row = document.createElement('tr')
                     row.id = item['id']
 
                     if (!document.getElementById("filter-by-name").value && document.getElementById("track-select-id").value !== "all") {
+                        if(Number(item['time']) !== Number(prevTime)){
+                            position++
+                        }
+                        prevTime = item['time']
                         const tdPos = document.createElement('td')
-                        tdPos.textContent = position++ + '.'
+                        tdPos.textContent = position + '.'
                         tdPos.id = "pos-" + item['id']
                         row.appendChild(tdPos)
                     }
