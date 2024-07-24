@@ -191,7 +191,6 @@
 
             function formatTime(timeInTensOfMillSec) {
                 var tensOfMillis = timeInTensOfMillSec % 100
-                tensOfMillis = Math.floor(tensOfMillis/10)
                 var timeInSec = Math.floor(timeInTensOfMillSec / 100)
                 var hours = Math.floor(timeInSec / 3600)
                 var minutes = Math.floor((timeInSec - hours * 3600) / 60) % 60
