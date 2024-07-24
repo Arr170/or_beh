@@ -45,6 +45,7 @@
     </div>
 </div>
 {% endif %}
+
 <div class="filter-container row justify-content-center bg-body min-vw-100" id="filter-container">
     <div class="col-lg-3 col-12 m-2 align-self-center">
 
@@ -63,8 +64,9 @@
         </select>
     </div>
 </div>
-<div id="buffer"></div>
 
+<div id="buffer" >
+</div>
 
 
 <div id="table-container">
@@ -84,27 +86,31 @@
         <script>
             const filterContainer = document.getElementById("filter-container")
             const arrow = document.getElementById("arrow-up")
+            const buffer = document.getElementById("buffer")
             let navHeight = document.getElementById("nav").offsetHeight
             let filterHeight = document.getElementById("filter-container").offsetHeight
 
 
             window.addEventListener('scroll', function () {
-                document.getElementById("buffer").offsetHeight=filterHeight
+                
                 const filterContainer = document.getElementById("filter-container")
                 const arrow = document.getElementById("arrow-up")
                 let navHeight = document.getElementById("nav").offsetHeight
+                buffer.style.height = filterHeight
                 //console.log(navHeight)
                 if (window.scrollY > navHeight) {
                     filterContainer.style.position = "fixed"
                     filterContainer.style.top = "0"
                     arrow.style.display = "flex"
-                    arrow.style.top = navHeight
+                    arrow.style.top = filterHeight+"px"
+                    buffer.style.height = filterHeight+"px"
 
                 } else {
                     filterContainer.style.position = "relative"
                     filterContainer.style.top = ""
                     filterContainer.style.width = "100%"
                     arrow.style.display = "none"
+                    buffer.style.height = "0px"
                 }
             }, false);
 
