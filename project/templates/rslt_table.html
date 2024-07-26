@@ -307,9 +307,7 @@
                     tdName.textContent = item['name']
                     tdName.onclick = () => { focusRow(item['id']) } //kliknutim na jmeno se zobrazi tabulka s jednou trati a nakliknuty zaznam se zvyrazni
                     tdName.id = "name-" + item['id']
-                    if(item['name'].length > 15){
-                        tdName.classList.add("text-break")
-                    }
+                    tdName.classList.add("text-break")                  
                     row.appendChild(tdName)
 
                     const tdTime = document.createElement('td')
