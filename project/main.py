@@ -4,6 +4,7 @@ from .models import *
 import os, pandas
 from . import db
 import logging
+import time
 from logging.handlers import *
 
 
@@ -84,8 +85,8 @@ def dates():
 #@login_required
 def tracks_data():
     if request.method == "GET":
+        
         tracks = Track.query.all()
-        print(tracks)  # List of Point objects
         data = [row.to_dict() for row in tracks]
         # for row in tracks:
         #     print(row.to_dict())
@@ -128,6 +129,7 @@ def tracks_delete(id):
 
 @main.route('/data', methods=['GET'])
 def data():
+    time.sleep(3)
     args_search = request.args
     # check is request contains args
     # if args are present, edit search to search by name

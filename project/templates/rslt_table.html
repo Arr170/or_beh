@@ -65,7 +65,7 @@
     </div>
 </div>
 
-<div id="buffer" >
+<div id="buffer">
 </div>
 
 
@@ -92,7 +92,7 @@
 
 
             window.addEventListener('scroll', function () {
-                
+
                 const filterContainer = document.getElementById("filter-container")
                 const arrow = document.getElementById("arrow-up")
                 let navHeight = document.getElementById("nav").offsetHeight
@@ -102,8 +102,8 @@
                     filterContainer.style.position = "fixed"
                     filterContainer.style.top = "0"
                     arrow.style.display = "flex"
-                    arrow.style.top = filterHeight+"px"
-                    buffer.style.height = filterHeight+"px"
+                    arrow.style.top = filterHeight + "px"
+                    buffer.style.height = filterHeight + "px"
 
                 } else {
                     filterContainer.style.position = "relative"
@@ -118,7 +118,11 @@
             document.addEventListener('DOMContentLoaded', function () {
                 // console.log("loading")
                 document.getElementById("loading-container").classList.add("d-flex")
-                document.getElementById("loading-tab").innerHTML = "loading..."
+                document.getElementById("loading-tab").innerHTML = `
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                `
 
                 fetchJson_CreateTable()
                     .then(() => {
@@ -126,7 +130,7 @@
                         params = new URLSearchParams(url.search)
                         if (params.has("forceFocus")) {
                             let id = params.get("forceFocus")
-                            if(id){
+                            if (id) {
                                 focusRow(id)
                             }
                         }
@@ -171,7 +175,7 @@
                     })
             }
 
-            function parseDates(){
+            function parseDates() {
 
                 const dateSelect = document.getElementById("date-select-id")
 
@@ -292,7 +296,7 @@
                     row.id = item['id']
 
                     if (!document.getElementById("filter-by-name").value && document.getElementById("track-select-id").value !== "all") {
-                        if(Number(item['time']) !== Number(prevTime)){
+                        if (Number(item['time']) !== Number(prevTime)) {
                             position++
                         }
                         prevTime = item['time']
@@ -307,7 +311,7 @@
                     tdName.textContent = item['name']
                     tdName.onclick = () => { focusRow(item['id']) } //kliknutim na jmeno se zobrazi tabulka s jednou trati a nakliknuty zaznam se zvyrazni
                     tdName.id = "name-" + item['id']
-                    tdName.classList.add("text-break")                  
+                    tdName.classList.add("text-break")
                     row.appendChild(tdName)
 
                     const tdTime = document.createElement('td')
@@ -410,7 +414,7 @@
                     }
                 )
                     //.then(res => console.log(res))
-                    .then(()=>{
+                    .then(() => {
                         location.reload()
                     })
                     .catch(error => {
@@ -427,7 +431,7 @@
                 fetch(url + id,
                     { method: "DELETE" }
                 )
-                    .then(()=>{
+                    .then(() => {
                         location.reload()
                     })
             }
@@ -457,7 +461,7 @@
                 })
             }
 
-            
+
 
 
 
