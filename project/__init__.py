@@ -48,7 +48,7 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    from .models import User, Result, Track, Point
+    from .models import User, Result, Track, Point, Event
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -64,7 +64,13 @@ def create_app():
             
             init_admin = User(email = os.environ["ADMIN_MAIL"], name = "Admin",password=generate_password_hash(os.environ["ADMIN_PASS"], method='pbkdf2:sha1') )
             db.session.add(init_admin)
-            db.session.commit()     
+            db.session.commit()  
+
+        ev = Event.query.get(1)
+        if not ev:
+            init_ev = Event(name = "Název eventu")
+            db.session.add(init_ev)
+            db.session.commit()
 
         # #Create a new track
         # new_track = Track(name='Track1')

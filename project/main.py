@@ -4,7 +4,6 @@ from .models import *
 import os, pandas
 from . import db
 import logging
-import time
 from logging.handlers import *
 
 
@@ -127,9 +126,26 @@ def tracks_delete(id):
         #print("nah, delete doesnt work")
         return "error", 500
 
+@main.route('/change_name', methods=["POST"])
+@login_required
+def change_name():
+    data = request.get_json()
+    ev = Event.query.get(1)
+    ev.name = data["newName"]
+    db.session.commit()
+    return "ok"
+
+@main.route('/event_name', methods=["GET"])
+def event_name():
+    ev = Event.query.get(1)
+    if not ev:
+        return {"eventName": "None"}, 200
+    else:
+        return{"eventName": ev.name}, 200
+
+
 @main.route('/data', methods=['GET'])
 def data():
-    time.sleep(3)
     args_search = request.args
     # check is request contains args
     # if args are present, edit search to search by name
