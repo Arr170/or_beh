@@ -44,11 +44,7 @@
                         {% endif %}
                     </li> -->
                     {% if current_user.is_authenticated %}
-                    <li>
-                        <a href="{{ url_for('auth.logout') }}" class="nav-link">
-                            Logout
-                        </a>
-                    </li>
+                    
                     <li>
                         <a href="{{ url_for('main.tracks')}}" class="nav-link">
                             Tracks
@@ -57,6 +53,11 @@
                     <li>
                         <a data-bs-toggle="modal" data-bs-target="#change-name-modal" class="nav-link">
                             Změna názvu
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('auth.logout') }}" class="nav-link">
+                            Logout
                         </a>
                     </li>
                     {% endif %}

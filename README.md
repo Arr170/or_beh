@@ -22,6 +22,6 @@
    - `ADMIN_MAIL` a `ADMIN_PASS` nastavit si valstni, vytvori se tim pri prvnim spusteni programu administratorsky ucet
    - `SECRET_POST` nastavit vlastni, potom je treba nastavit hodnotu i v kodu ke ctecce
    
-# TRATE A NAZEV EVENTU
+# TRATE A NAZEV EVENTU:
 - jakmile je stranka spustena, je mozne se prihlasit na url `zakladnidomena/login`, tlacitko s odkazem na prihlasovaci stranku je skryte, ale je mozne ho zobrazit odkomentovanim v souboru base.html
 - pote se v liste objevi moznosti pridavat a odebirat trate a menit nazev eventu
